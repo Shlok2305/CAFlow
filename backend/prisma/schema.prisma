@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BusinessType {
+  RETAIL
+  CLOTHING
+}
+
+enum BusinessRole {
+  OWNER
+  ADMIN
+  EMPLOYEE
+  ACCOUNTANT
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships BusinessMember[]
+}
+
+model Business {
+  id          String       @id @default(uuid())
+  name        String
+  businessType BusinessType
+  email       String?
+  phone       String?
+  address     String?
+  gstNumber   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  members BusinessMember[]
+}
+
+model BusinessMember {
+  id         String       @id @default(uuid())
+  userId     String
+  businessId String
+  role       BusinessRole @default(EMPLOYEE)
+  createdAt  DateTime     @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([businessId])
+}
