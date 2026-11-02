@@ -1,9 +1,10 @@
-import prisma from "./lib/prisma.js";
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-
-dotenv.config();
+import prisma from "./lib/prisma.js";
+import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,6 +43,12 @@ app.get("/api/v1/db-health", async (req, res) => {
     });
   }
 });
+
+// 404 handler for unmatched routes
+app.use(notFoundHandler);
+
+// Centralized error-handling middleware
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
