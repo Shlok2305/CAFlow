@@ -4,6 +4,7 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import prisma from "./lib/prisma.js";
+import authRouter from "./modules/auth/auth.routes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -43,6 +44,9 @@ app.get("/api/v1/db-health", async (req, res) => {
     });
   }
 });
+
+// Authentication routes
+app.use("/api/v1/auth", authRouter);
 
 // 404 handler for unmatched routes
 app.use(notFoundHandler);
